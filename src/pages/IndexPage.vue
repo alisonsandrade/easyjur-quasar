@@ -13,7 +13,7 @@
       <div class="col-12 col-sm-6 col-md-4">
         <q-card class="my-card">
           <q-img
-            src="src/assets/calendar.svg"
+            src="src/assets/calendar.png"
             style="height: 100%; max-height: 224.5px; max-width: 100%"
           >
             <!--<q-img src="src/assets/calendar.svg">-->
