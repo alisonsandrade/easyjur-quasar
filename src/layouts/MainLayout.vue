@@ -26,7 +26,7 @@
       <div class="column justify-between full-height">
         <div class="col-11">
           <q-list>
-            <q-item-label header class="q-pb-none q-mb-none">
+            <q-item-label header class="q-pb-none q-mb-none perfil-header">
               <div class="q-pa-sm q-gutter-sm text-center">
                 <q-avatar size="98px">
                   <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
@@ -73,7 +73,7 @@ const linksList = [
     title: "Calendário",
     caption: "Microsoft Calendar",
     icon: "event",
-    link: "/events",
+    link: "/events/list",
   },
   {
     title: "Sobre",
@@ -136,5 +136,18 @@ export default defineComponent({
 .logo {
   text-decoration: none;
   color: white;
+}
+.q-router-link--exact-active {
+  background-color: var(--q-primary);
+  color: white;
+}
+.perfil-header {
+  // background-image: url("src/assets/background-perfil.jpg");
+  background: rgb(228, 244, 244);
+  background: linear-gradient(
+    0deg,
+    rgb(239, 232, 232) 0%,
+    rgb(190, 216, 254) 100%
+  );
 }
 </style>
