@@ -34,6 +34,7 @@
                 <p>
                   @{{
                     authStore.account &&
+                    authStore.account.username &&
                     authStore.account.username.split("@")[0]
                   }}
                 </p>
