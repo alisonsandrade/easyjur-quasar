@@ -1,14 +1,6 @@
 /* eslint-env node */
-
-/*
- * This file runs in a Node context (it's NOT transpiled by Babel), so use only
- * the ES6 features that are supported by your Node version. https://node.green/
- */
-
-// Configuration for your app
-// https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
-
 const { configure } = require("quasar/wrappers");
+require("dotenv").config();
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -62,7 +54,18 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      env: require("dotenv").config().parsed,
+      env: {
+        PORT: process.env.PORT,
+        CLOUD_INSTANCE: process.env.CLOUD_INSTANCE,
+        TENANT_ID: process.env.TENANT_ID,
+        CLIENT_ID: process.env.CLIENT_ID,
+        CLIENT_SECRET: process.env.CLIENT_SECRET,
+        REDIRECT_URI: process.env.REDIRECT_URI,
+        POST_LOGOUT_REDIRECT_URI: process.env.POST_LOGOUT_REDIRECT_URI,
+        SCOPES: process.env.SCOPES,
+        GRAPH_API_ENDPOINT:
+          process.env.GRAPH_API_ENDPOINT || "https://graph.microsoft.com/v1.0",
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
