@@ -31,13 +31,7 @@
                 <q-avatar size="98px">
                   <img src="https://cdn.quasar.dev/img/boy-avatar.png" />
                 </q-avatar>
-                <p>
-                  @{{
-                    authStore.account &&
-                    authStore.account.username &&
-                    authStore.account.username.split("@")[0]
-                  }}
-                </p>
+                <p>@{{ (account && account.username.split("@")[0]) || "" }}</p>
               </div>
             </q-item-label>
 
@@ -103,6 +97,8 @@ export default defineComponent({
     const authStore = useAuthStore();
     const leftDrawerOpen = ref(false);
 
+    const account = authStore.account;
+
     const disconnect = async () => {
       $q.dialog({
         title: "Desconectar",
@@ -125,7 +121,7 @@ export default defineComponent({
     };
 
     return {
-      authStore,
+      account,
       disconnect,
       essentialLinks: linksList,
       leftDrawerOpen,
