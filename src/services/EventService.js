@@ -4,9 +4,13 @@ class EventService {
   constructor() {}
 
   async getEvents(idCalendar, options) {
+    const startdatetime = new Date();
+    const enddatetime = new Date().setDate(startdatetime.getDate() + 360);
+
     const url = idCalendar
-      ? `/me/calendars/${idCalendar}/events?$select=subject,body,bodyPreview,organizer,attendees,start,end,location`
+      ? `/me/calendars/${idCalendar}/events?${startdatetime}&${enddatetime}?$select=subject,body,bodyPreview,organizer,attendees,start,end,location`
       : "/me/events";
+
     const response = await request.get(url, options);
     return response.data;
   }
@@ -28,6 +32,11 @@ class EventService {
     const url = "$batch";
     const dateNormalized = this.normalizeDataCreateEvents(data);
     return await request.post(url, { requests: dateNormalized }, options);
+  }
+
+  async deleteEvent(idCalendar, idEvent) {
+    const url = `/me/calendars/${idCalendar}/events/${idEvent}`;
+    return await request.delete(url);
   }
 
   prepareDataToGraph(data) {
