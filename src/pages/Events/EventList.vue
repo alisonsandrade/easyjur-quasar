@@ -39,6 +39,7 @@
       :columns="columns"
       row-key="name"
       no-data-label="Nenhum evento encontrado"
+      :pagination="{ rowsPerPage: 10 }"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -53,6 +54,17 @@
           </q-td>
           <q-td key="body" :props="props">
             {{ props.row.bodyPreview }}
+          </q-td>
+          <q-td key="action" :props="props">
+            <q-btn
+              icon="delete"
+              flat
+              color="negative"
+              round
+              @click="removeEvent(props.row)"
+            >
+              <q-tooltip> Excluir o evento </q-tooltip>
+            </q-btn>
           </q-td>
         </q-tr>
       </template>
@@ -97,12 +109,14 @@ export default {
         field: "bodyPreview",
         classes: "td_body",
       },
+      { name: "action", align: "center", label: "Ação", field: "action" },
     ];
 
     // Normalização dos dados oriundos da API Graph
     const normalizeEvents = (events) => {
       return events.map((item) => {
         return {
+          calendar: calendar.value,
           id: item.id,
           subject: item.subject,
           start: item.start.dateTime,
@@ -132,11 +146,41 @@ export default {
       }
     };
 
+    const removeEvent = async (event) => {
+      try {
+        $q.loading.show();
+        $q.dialog({
+          title: "Confirmação",
+          message: "Tem certeza que deseja excluir o evento?",
+          cancel: true,
+        }).onOk(async () => {
+          const { calendar, id } = event;
+          await eventService.deleteEvent(calendar.id, id);
+          await updateEvents();
+          $q.notify({
+            type: "positive",
+            message: "Evento excluído com sucesso!",
+          });
+        });
+      } catch (error) {
+        $q.notify({
+          type: "negative",
+          message: error.response?.data?.message || error.message,
+        });
+      } finally {
+        $q.loading.hide();
+      }
+    };
+
     onMounted(async () => {
       try {
         $q.loading.show();
         const responseCalendars = await eventService.getAllCalendars();
         optionsCalendars.value = responseCalendars.value;
+
+        calendar.value = optionsCalendars.value.filter(
+          (calendar) => calendar.isDefaultCalendar
+        )[0];
 
         events.value = await getEventsByCalendarNormalize();
       } catch (error) {
@@ -155,6 +199,7 @@ export default {
       optionsCalendars,
       columns,
       updateEvents,
+      removeEvent,
     };
   },
 };
