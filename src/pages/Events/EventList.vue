@@ -1,5 +1,6 @@
 <template>
   <q-page class="q-pb-md">
+    <p class="text-subtitle1">Listagem dos eventos</p>
     <div class="row q-col-gutter-sm q-pb-sm">
       <div class="col-12 col-sm-4">
         <q-btn class="full-width" color="accent" :to="{ name: 'EventCreate' }"
@@ -33,13 +34,11 @@
     </div>
 
     <q-table
-      title="Eventos"
       wrap-cells
       :rows="events"
       :columns="columns"
       row-key="name"
       no-data-label="Nenhum evento encontrado"
-      :pagination="{ rowsPerPage: 10 }"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -56,15 +55,37 @@
             {{ props.row.bodyPreview }}
           </q-td>
           <q-td key="action" :props="props">
-            <q-btn
-              icon="delete"
-              flat
-              color="negative"
-              round
-              @click="removeEvent(props.row)"
-            >
-              <q-tooltip> Excluir o evento </q-tooltip>
-            </q-btn>
+            <div class="row justify-center">
+              <div class="col">
+                <q-btn
+                  icon="search"
+                  flat
+                  color="secondary"
+                  round
+                  @click="
+                    $q.dialog({
+                      title: 'Descrição',
+                      message: props.row.bodyHtml,
+                      html: true,
+                      style: `${$q.screen.gt.sm && 'width: 70%;'}`,
+                    })
+                  "
+                >
+                  <q-tooltip> Visualizar detalhes da descrição </q-tooltip>
+                </q-btn>
+              </div>
+              <div class="col">
+                <q-btn
+                  icon="delete"
+                  flat
+                  color="negative"
+                  round
+                  @click="removeEvent(props.row)"
+                >
+                  <q-tooltip> Excluir o evento </q-tooltip>
+                </q-btn>
+              </div>
+            </div>
           </q-td>
         </q-tr>
       </template>
@@ -99,15 +120,14 @@ export default {
         align: "left",
         label: "Título",
         field: "subject",
-        style: "width: 300px",
-        classes: "td_subject",
+        style: "max-width: 20rem;",
       },
       {
         name: "body",
         align: "left",
         label: "Descrição",
         field: "bodyPreview",
-        classes: "td_body",
+        style: "max-width: 30rem;",
       },
       { name: "action", align: "center", label: "Ação", field: "action" },
     ];
@@ -129,6 +149,8 @@ export default {
 
     const getEventsByCalendarNormalize = async (idCalendar, options) => {
       const { value } = await eventService.getEvents(idCalendar, options);
+
+      console.log("eventos", value);
       return normalizeEvents(value);
     };
 
@@ -205,11 +227,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.td_subject {
-  max-height: 200px;
-}
-.td_body {
-  max-height: 200px;
-}
-</style>
+<style lang="scss" scoped></style>
