@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-xl">
+  <div class="q-pa-lg">
     <p class="text-h6">
       <q-icon name="question_answer" />
       Sobre o sistema
