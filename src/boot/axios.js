@@ -47,7 +47,14 @@ request.interceptors.response.use(
       let message = "";
 
       if (codeError === "InvalidAuthenticationToken") {
-        await store.refreshToken();
+        const confirm = window.confirm(
+          "Token inválido ou expirado. Deseja renovar o seu token de acesso?"
+        );
+        if (confirm) {
+          await store.refreshToken();
+        } else {
+          store.signOut();
+        }
         router().go();
         message = error.response?.data?.message || error.message;
       } else {
