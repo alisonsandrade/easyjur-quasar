@@ -47,7 +47,12 @@
 
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input v-model="event.start" label="Início">
+          <q-input
+            v-model="event.start"
+            label="Início"
+            mask="##/##/#### ##:##"
+            :rules="[(val) => dateIsValid(val) || 'Data inicial inválida']"
+          >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -86,7 +91,12 @@
           </q-input>
         </div>
         <div class="col-12 col-sm-6">
-          <q-input v-model="event.end" label="Fim">
+          <q-input
+            v-model="event.end"
+            label="Fim"
+            mask="##/##/#### ##:##"
+            :rules="[(val) => dateIsValid(val) || 'Data final  inválida']"
+          >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -154,6 +164,7 @@
             color="primary"
             class="full-width"
             label="Incluir"
+            :disable="eventsInMemory.length >= 10"
           />
         </div>
         <div class="col-12 col-sm-6">
@@ -168,6 +179,19 @@
         </div>
       </div>
     </q-form>
+
+    <q-banner
+      v-if="eventsInMemory.length >= 10"
+      inline-actions
+      rounded
+      class="q-mt-sm bg-orange text-white"
+    >
+      <template v-slot:avatar>
+        <q-icon name="info" color="white" />
+      </template>
+      Você atingiu o limite máximo de 10 registros para envio em lote. Por
+      favor, salve o registro para incluir mais registros em lote.
+    </q-banner>
 
     <q-table
       class="q-mt-md q-mb-md"
@@ -292,17 +316,28 @@ export default {
     const inputBody = ref(null);
 
     const addEventInMemory = (data) => {
-      eventsInMemory.value.push(Object.assign({}, data));
-
-      //Limpa dados e retornar o curso para o título
-      event.value.start = event.value.end;
-      event.value.end = customDate.setFormatDateToBRAndAddMinutes(
-        event.value.end,
-        minutesDefaultDate.value
+      const dateIsValid = customDate.checkDatesValidFormatBR(
+        event.value.start,
+        event.value.end
       );
-      event.value.body = "";
 
-      inputBody.value.focus();
+      if (dateIsValid) {
+        eventsInMemory.value.push(Object.assign({}, data));
+
+        //Limpa dados e retornar o curso para o título
+        event.value.start = event.value.end;
+        event.value.end = customDate.setFormatDateToBRAndAddMinutes(
+          event.value.end,
+          minutesDefaultDate.value
+        );
+        event.value.body = "";
+
+        inputBody.value.focus();
+      } else {
+        throw new Error(
+          "Data inválida. Favor verifique os campos data inicial e final."
+        );
+      }
     };
 
     const clearEventsInMemory = () => {
@@ -354,11 +389,12 @@ export default {
     const onSubmit = async () => {
       form.value.validate().then((success) => {
         addEventInMemory(event.value);
-        $q.notify({
-          type: "positive",
-          message: "Evento adicionado ao lote com sucesso.",
-        });
         if (success) {
+          console.log("passou no success");
+          $q.notify({
+            type: "positive",
+            message: "Evento adicionado ao lote com sucesso.",
+          });
         } else {
           $q.notify({
             type: "negative",
@@ -387,6 +423,8 @@ export default {
       }
     });
 
+    const dateIsValid = (value) => customDate.validateDateTimeFormatBR(value);
+
     return {
       expanded,
       showQEditor,
@@ -402,6 +440,7 @@ export default {
       clearEventsInMemory,
       onSave,
       removeEvent,
+      dateIsValid,
     };
   },
 };

@@ -11,7 +11,12 @@
 
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input v-model="event.start" label="Início">
+          <q-input
+            v-model="event.start"
+            label="Início"
+            :mask="maskInput"
+            :rules="[(val) => !!val || 'Este campo é obrigatório']"
+          >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -19,7 +24,11 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="event.start" mask="DD/MM/YYYY HH:mm">
+                  <q-date
+                    v-model="event.start"
+                    mask="DD/MM/YYYY HH:mm"
+                    today-btn
+                  >
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Close" color="primary" flat />
                     </div>
@@ -50,7 +59,12 @@
           </q-input>
         </div>
         <div class="col-12 col-sm-6">
-          <q-input v-model="event.end" label="Fim">
+          <q-input
+            v-model="event.end"
+            label="Fim"
+            :mask="maskInput"
+            :rules="[(val) => !!val || 'Este campo é obrigatório']"
+          >
             <template v-slot:prepend>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy
@@ -58,7 +72,7 @@
                   transition-show="scale"
                   transition-hide="scale"
                 >
-                  <q-date v-model="event.end" mask="DD/MM/YYYY HH:mm">
+                  <q-date v-model="event.end" mask="DD/MM/YYYY HH:mm" today-btn>
                     <div class="row items-center justify-end">
                       <q-btn v-close-popup label="Close" color="primary" flat />
                     </div>
@@ -166,6 +180,7 @@ export default {
 
     const form = ref();
     const mask = ref("DD/MM/YYYY HH:mm");
+    const maskInput = ref("##/##/#### ##:##");
 
     const customDate = new CustomDate(mask.value);
 
@@ -182,6 +197,19 @@ export default {
 
     const onSubmit = async () => {
       form.value.validate().then((success) => {
+        let message = "";
+        const datesIsValid = customDate.checkDatesValidFormatBR(
+          event.value.start,
+          event.value.end,
+          event.value.isAllDay
+        );
+
+        if (!datesIsValid) {
+          success = false;
+          message =
+            "Data inválida. Favor verifique os campos data inicial e final.";
+        }
+
         if (success) {
           emit(
             "submit",
@@ -203,7 +231,7 @@ export default {
         } else {
           $q.notify({
             type: "negative",
-            message: "Formulário inválido",
+            message: message || "Formulário inválido",
           });
         }
       });
@@ -230,6 +258,8 @@ export default {
     const updateDates = () => {
       if (event.value.isAllDay) {
         mask.value = "DD/MM/YYYY";
+        maskInput.value = "##/##/####";
+
         event.value.start = customDate.setFormatDateToBR(
           event.value.start,
           mask.value
@@ -239,9 +269,9 @@ export default {
           1440,
           mask.value
         );
-      }
-      if (event.value.isAllDay === false) {
+      } else {
         mask.value = "DD/MM/YYYY HH:mm";
+        maskInput.value = "##/##/#### ##:##";
 
         event.value.start = customDate.setFormatDateToBR(
           extractDate(event.value.start, "DD/MM/YYYY"),
@@ -260,6 +290,7 @@ export default {
       form,
       onSubmit,
       mask,
+      maskInput,
       updateDates,
     };
   },
