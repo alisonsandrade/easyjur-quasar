@@ -53,4 +53,27 @@ export class CustomDate {
       "YYYY-MM-DDTHH:mm:ss"
     );
   }
+
+  validateDateTimeFormatBR(date) {
+    return /^([1-9]|([012][0-9])|(3[01]))[\/\-]([0]{0,1}[1-9]|1[012])[\/\-]\d\d\d\d [012]{0,1}[0-9]:[0-5][0-9]$/.test(
+      date
+    );
+  }
+
+  validateDateFormatBR(date) {
+    return /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/.test(
+      date
+    );
+  }
+
+  checkDatesValidFormatBR(start, end, onlyDate) {
+    if (onlyDate) {
+      return this.validateDateFormatBR(start) && this.validateDateFormatBR(end);
+    } else {
+      return (
+        this.validateDateTimeFormatBR(start) &&
+        this.validateDateTimeFormatBR(end)
+      );
+    }
+  }
 }
