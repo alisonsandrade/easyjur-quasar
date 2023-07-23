@@ -4,11 +4,12 @@
     :label="props.label"
     :name="props.name"
     @update:model-value="updateValue"
+    :mask="maskInput"
   >
     <template v-slot:prepend>
       <q-icon :name="nameIconDate" class="cursor-pointer">
         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-          <q-date :v-model="props.model" :mask="props.mask">
+          <q-date :v-model="props.model" :mask="props.mask" today-btn>
             <div class="row items-center justify-end">
               <q-btn v-close-popup label="Close" color="primary" flat />
             </div>
@@ -52,6 +53,10 @@ const props = defineProps({
     type: String,
     default: "DD/MM/YYYY HH:mm",
   },
+  maskInput: {
+    type: String,
+    default: "##/##/#### ##:",
+  },
   onlyDateField: {
     type: Boolean,
     Default: false,
@@ -60,10 +65,7 @@ const props = defineProps({
 
 const onlyDateField = computed(() => !props.onlyDateField);
 
-const updateValue = (value) => {
-  console.log("update", value);
-  emit("update:value", value);
-};
+const updateValue = (value) => emit("update:value", value);
 </script>
 
 <style lang="scss" scoped></style>
