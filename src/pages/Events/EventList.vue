@@ -149,8 +149,6 @@ export default {
 
     const getEventsByCalendarNormalize = async (idCalendar, options) => {
       const { value } = await eventService.getEvents(idCalendar, options);
-
-      console.log("eventos", value);
       return normalizeEvents(value);
     };
 
