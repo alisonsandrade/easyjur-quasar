@@ -55,7 +55,7 @@ const props = defineProps({
   },
   maskInput: {
     type: String,
-    default: "##/##/#### ##:",
+    default: "##/##/#### ##:##",
   },
   onlyDateField: {
     type: Boolean,
