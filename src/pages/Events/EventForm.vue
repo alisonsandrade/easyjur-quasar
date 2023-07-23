@@ -11,103 +11,28 @@
 
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input
+          <CustomFieldDate
             v-model="event.start"
             label="Início"
-            :mask="maskInput"
-            :rules="[(val) => !!val || 'Este campo é obrigatório']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date
-                    v-model="event.start"
-                    mask="DD/MM/YYYY HH:mm"
-                    today-btn
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-
-            <template v-slot:append v-if="!event.isAllDay">
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time
-                    v-model="event.start"
-                    mask="DD/MM/YYYY HH:mm"
-                    format24h
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+            name="start"
+            :onlyDateField="event.isAllDay"
+            :mask="mask"
+            :maskInput="maskInput"
+            :rules="[(val) => dateIsValid(val) || 'Data inicial inválida']"
+          />
         </div>
         <div class="col-12 col-sm-6">
-          <q-input
+          <CustomFieldDate
             v-model="event.end"
             label="Fim"
-            :mask="maskInput"
-            :rules="[(val) => !!val || 'Este campo é obrigatório']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="event.end" mask="DD/MM/YYYY HH:mm" today-btn>
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-
-            <template v-slot:append v-if="!event.isAllDay">
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time v-model="event.end" mask="DD/MM/YYYY HH:mm" format24h>
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+            name="end"
+            :onlyDateField="event.isAllDay"
+            :mask="mask"
+            :maskInput="maskInput"
+            :rules="[(val) => dateIsValid(val) || 'Data final inválida']"
+          />
         </div>
       </div>
-
-      <!--
-      <CustomFieldDate
-        v-model="event.start"
-        label="Teste"
-        name="Teste"
-        :onlyDateField="event.isAllDay"
-      />
-      -->
 
       <q-input
         class="q-pb-sm"
@@ -164,14 +89,14 @@ import { onMounted, ref } from "vue";
 import { eventService } from "src/services/EventService";
 import { date, useQuasar } from "quasar";
 import { CustomDate } from "src/utils/CustomDate";
-//import CustomFieldDate from "src/components/CustomFieldDate.vue";
+import CustomFieldDate from "src/components/CustomFieldDate.vue";
 
 export default {
   name: "EventForm",
 
   emits: ["submit"],
 
-  //components: { CustomFieldDate },
+  components: { CustomFieldDate },
 
   setup(_, { emit }) {
     const $q = useQuasar();
@@ -194,6 +119,11 @@ export default {
       body: "",
     });
     const optionsCalendars = ref([]);
+
+    const dateIsValid = (value) =>
+      mask.value === "DD/MM/YYYY"
+        ? customDate.validateDateFormatBR(value)
+        : customDate.validateDateTimeFormatBR(value);
 
     const onSubmit = async () => {
       form.value.validate().then((success) => {
@@ -286,6 +216,7 @@ export default {
 
     return {
       event,
+      dateIsValid,
       optionsCalendars,
       form,
       onSubmit,

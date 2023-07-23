@@ -47,88 +47,24 @@
 
       <div class="row q-col-gutter-md">
         <div class="col-12 col-sm-6">
-          <q-input
+          <CustomFieldDate
             v-model="event.start"
             label="Início"
-            mask="##/##/#### ##:##"
+            name="start"
+            :mask="mask"
+            maskInput="##/##/#### ##:##"
             :rules="[(val) => dateIsValid(val) || 'Data inicial inválida']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="event.start" mask="DD/MM/YYYY HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time
-                    v-model="event.start"
-                    mask="DD/MM/YYYY HH:mm"
-                    format24h
-                  >
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+          />
         </div>
         <div class="col-12 col-sm-6">
-          <q-input
+          <CustomFieldDate
             v-model="event.end"
-            label="Fim"
-            mask="##/##/#### ##:##"
-            :rules="[(val) => dateIsValid(val) || 'Data final  inválida']"
-          >
-            <template v-slot:prepend>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-date v-model="event.end" mask="DD/MM/YYYY HH:mm">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-
-            <template v-slot:append>
-              <q-icon name="access_time" class="cursor-pointer">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <q-time v-model="event.end" mask="DD/MM/YYYY HH:mm" format24h>
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-time>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
+            label="Início"
+            name="end"
+            :mask="mask"
+            maskInput="##/##/#### ##:##"
+            :rules="[(val) => dateIsValid(val) || 'Data final inválida']"
+          />
         </div>
       </div>
 
@@ -230,6 +166,7 @@
       </template>
     </q-table>
 
+    <!-- buttons actions -->
     <div class="row q-col-gutter-md">
       <div class="col-12 col-sm-6">
         <q-btn
@@ -260,9 +197,12 @@ import { useQuasar } from "quasar";
 import { eventService } from "src/services/EventService";
 import { CustomDate } from "src/utils/CustomDate";
 import { onMounted, ref } from "vue";
+import CustomFieldDate from "src/components/CustomFieldDate.vue";
 
 export default {
   name: "EventCreateMassive",
+
+  components: { CustomFieldDate },
 
   emits: ["submit"],
 
@@ -390,7 +330,6 @@ export default {
       form.value.validate().then((success) => {
         addEventInMemory(event.value);
         if (success) {
-          console.log("passou no success");
           $q.notify({
             type: "positive",
             message: "Evento adicionado ao lote com sucesso.",
@@ -434,6 +373,7 @@ export default {
       columns,
       optionsCalendars,
       form,
+      mask,
       onSubmit,
       inputSubject,
       inputBody,
